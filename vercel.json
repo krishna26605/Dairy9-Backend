@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "rm -rf node_modules package-lock.json && npm install",
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs20.x"
     }
   },
+  "buildCommand": "rm -rf node_modules package-lock.json && npm install",
   "routes": [
     {
       "src": "/(.*)",
