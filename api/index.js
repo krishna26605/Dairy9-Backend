@@ -43,5 +43,18 @@ app.get('/', (req, res) => {
   });
 });
 
-// Export app (no app.listen)
-export default app;
+// Convert Express app to Vercel serverless function
+export default async function handler(req, res) {
+  // Ensure database connection
+  await connectDB();
+  
+  // Return Promise-based handler
+  return new Promise((resolve, reject) => {
+    app(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
+}
