@@ -1,21 +1,37 @@
-// C:\Users\Krishna\OneDrive\Desktop\backend-dairy9\Dairy9-Backend\config\db.js
+// config/db.js
+import mongoose from "mongoose";
 
+let cached = globalThis._mongo;
+if (!cached) {
+  cached = globalThis._mongo = { conn: null, promise: null };
+}
 
-import mongoose from 'mongoose';
-
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
-    console.log(`✅ MongoDB Connected`);
-  } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
-    process.exit(1); // Stop the server
-
+async function connectDB() {
+  if (cached.conn) {
+    return cached.conn;
   }
-};
+
+  if (!cached.promise) {
+    const uri = process.env.MONGODB_URI;
+    if (!uri) throw new Error("❌ MONGODB_URI is missing in environment variables");
+
+    cached.promise = mongoose
+      .connect(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      .then((mongoose) => {
+        console.log("✅ MongoDB Connected (cached)");
+        return mongoose;
+      })
+      .catch((err) => {
+        console.error("❌ MongoDB connection failed:", err.message);
+        throw err;
+      });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
 export default connectDB;
