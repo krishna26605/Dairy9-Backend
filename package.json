@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "nodemon server.js",
-    "build": "echo '🧹 Cleaning node_modules and package-lock.json...' && rm -rf node_modules package-lock.json && echo '📦 Installing fresh dependencies...' && npm install && echo '✅ Dependencies reinstalled successfully!'"},
+    "dev": "nodemon api/index.js",
+    "build": "echo Cleaning up... && del /f /s /q node_modules package-lock.json && npm install",
+    "vercel-build": "echo Building for Vercel deployment..."
+  },
   "dependencies": {
     "axios": "^1.13.1",
     "bcryptjs": "^3.0.2",

@@ -18,6 +18,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
+let isConnected = false;
 
 // Middleware
 app.use(cors(productionConfig.cors));
@@ -45,16 +46,28 @@ app.get('/', (req, res) => {
 
 // Convert Express app to Vercel serverless function
 export default async function handler(req, res) {
-  // Ensure database connection
-  await connectDB();
-  
-  // Return Promise-based handler
-  return new Promise((resolve, reject) => {
-    app(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
+  try {
+    // Connect to DB if not already connected
+    if (!isConnected) {
+      await connectDB();
+      isConnected = true;
+    }
+
+    // Simple health check for root route
+    if (req.url === '/') {
+      return res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Handle main application routes
+    return app(req, res);
+  } catch (error) {
+    console.error('[Handler Error]:', error);
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
-  });
+  }
 }
