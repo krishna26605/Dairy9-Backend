@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs20.x"
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
-  },
-  "buildCommand": "rm -rf node_modules package-lock.json && npm install",
+  ],
   "routes": [
     {
       "src": "/(.*)",
