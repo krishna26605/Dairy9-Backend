@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "rm -rf node_modules package-lock.json && npm install",
   "builds": [
     {
       "src": "api/index.js",
